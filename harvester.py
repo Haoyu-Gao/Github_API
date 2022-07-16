@@ -18,9 +18,10 @@ with open("External.txt", 'r') as f:
 
 
 def github_api_data_harvester(db_name):
+
+    g = Github(ACCESS_TOKEN)
+    repos = g.get_repos()  # this is all the available public repos sorted based on their created time
     while True:
-        g = Github(ACCESS_TOKEN)
-        repos = g.get_repos()  # this is all the available public repos sorted based on their created time
 
         try:
             last_md_url = None
