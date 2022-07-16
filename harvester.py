@@ -14,7 +14,7 @@ simplification_set = set()
 
 with open("External.txt", 'r') as f:
     for line in f.readlines():
-        simplification_set.add(line)
+        simplification_set.add(line.strip())
 
 
 def github_api_data_harvester(db_name):
@@ -33,6 +33,7 @@ def github_api_data_harvester(db_name):
                             for file in commits[i].files:
                                 if file.filename == "README.md":
                                     last_md_url = file.raw_url
+
                         else:
                             current_commit_message = commits[i].commit.message
                             if only_change_md_file(commits, i) and is_simplification_commit(current_commit_message):
@@ -67,6 +68,8 @@ def is_simplification_commit(current_commit_message):
     """
     tokenizer = nltk.SpaceTokenizer()
     tokens = tokenizer.tokenize(current_commit_message)
+    print(simplification_set)
+    print(tokens)
     for token in tokens:
         if token in simplification_set:
             return True
@@ -85,8 +88,7 @@ def gather_md_file_pairs(db_name, repo, commits, idx, last_md_url):
 
     while not data_instance:
         try:
-
-            data_instance = DataObject(last_md_url, current_commit_url, repo)
+            data_instance = DataObject(last_md_url, current_commit_url, repo, str(idx))
 
             try:
                 client.put_record(db_name, data_instance.to_json_format())
